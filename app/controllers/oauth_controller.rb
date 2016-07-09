@@ -1,15 +1,12 @@
 class OauthController < ApplicationController
-
-  # TODO
-  # Routes for this controller are not provided by the gem and
-  # should be set according to your needs
-
   def request_omniauth
     if is_admin
-      # TODO
-      # Perform oauth request here. The oauth process should be able to
-      # remember the organization, either by a param in the request or using
-      # a session
+      auth_params = {
+        state: current_organization.uid
+      }
+
+      auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
+      redirect_to "/auth/#{params[:provider]}?#{auth_params}", id: "sign_in"
     else
       redirect_to root_url
     end
