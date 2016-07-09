@@ -27,4 +27,62 @@ describe OauthController, type: :controller do
     end
   end
 
+  describe 'create_omniauth' do
+    let(:user) { Maestrano::Connector::Rails::User.new(email: 'testing@mail.com', tenant: 'default') }
+    let(:uid) { 'uid-123' }
+
+    before {
+      allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:current_user).and_return(user)
+      request.env['omniauth.params'] = { state: uid }.with_indifferent_access
+    }
+
+    subject { get :create_omniauth, provider: 'base' }
+
+    context 'when org does not exist' do
+      it 'does nothing' do
+        expect(Maestrano::Connector::Rails::External).to_not receive(:fetch_company)
+        subject
+      end
+    end
+
+    context 'when org does not exist given the tenant' do
+      let!(:organization) { create(:organization, tenant: 'default', uid: uid) }
+
+      it 'does nothing' do
+        expect(Maestrano::Connector::Rails::External).to_not receive(:fetch_company)
+        subject
+      end
+    end
+
+    context 'when org exists' do
+      let!(:organization) { create(:organization, tenant: 'default', uid: uid) }
+
+      context 'when not admin' do
+        before {
+          allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:is_admin?).and_return(false)
+        }
+
+        it 'does nothing' do
+          expect(Maestrano::Connector::Rails::External).to_not receive(:fetch_company)
+          subject
+        end
+      end
+
+      context 'when admin' do
+        before {
+          allow_any_instance_of(Maestrano::Connector::Rails::Organization).to receive(:find_by_uid_and_tenant).and_return(organization)
+          allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:is_admin?).and_return(true)
+          allow_any_instance_of(Maestrano::Connector::Rails::Organization).to receive(:from_omniauth)
+          allow(Maestrano::Connector::Rails::External).to receive(:fetch_company).and_return({'name' => 'testing' })
+        }
+
+        it 'updates the org with the data from oauth and api calls' do
+          expect_any_instance_of(Maestrano::Connector::Rails::Organization).to receive(:from_omniauth)
+          expect(Maestrano::Connector::Rails::External).to receive(:fetch_company)
+          subject
+        end
+      end
+    end
+  end
+
 end

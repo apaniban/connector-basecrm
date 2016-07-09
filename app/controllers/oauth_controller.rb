@@ -13,13 +13,22 @@ class OauthController < ApplicationController
   end
 
   def create_omniauth
-    org_uid = '' # TODO
+    omniauth_params = request.env['omniauth.params']
+    org_uid = omniauth_params['state']
+
     organization = Maestrano::Connector::Rails::Organization.find_by_uid_and_tenant(org_uid, current_user.tenant)
 
     if organization && is_admin?(current_user, organization)
-      # TODO
-      # Update organization with oauth params
-      # Should at least set oauth_uid, oauth_token and oauth_provider
+      organization.from_omniauth(env["omniauth.auth"])
+
+      begin
+        company = Maestrano::Connector::Rails::External.fetch_company(organization)
+        organization.update(oauth_name: company['name'])
+      rescue =>e
+        empty_organization_fields(organization)
+        Rails.logger.info "Error in create_omniauth: #{e.backtrace}"
+        flash[:danger] = "API access is not enabled for your BaseCRM edition"
+      end
     end
 
     redirect_to root_url
