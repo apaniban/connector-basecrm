@@ -1,2 +1,4 @@
 connec_api_id: 'connec_api_id'
 connec_api_key: 'connec_api_key'
+basecrm_api_id: 'basecrm_api_id'
+basecrm_api_secret: 'basecrm_api_secret'

@@ -18,6 +18,8 @@ gem 'sidekiq'
 gem 'sidekiq-cron'
 gem 'slim'
 gem 'basecrm'
+gem 'omniauth-base', '~> 0.0.1'
+gem 'pry-rails'
 
 group :production, :uat do
   gem 'activerecord-jdbcpostgresql-adapter', platforms: :jruby
