@@ -107,8 +107,18 @@ describe HomeController, :type => :controller do
   describe 'redirect_to_external' do
     subject { get :redirect_to_external }
 
+    context 'when organization has a redirect url' do
+      let(:organization) { create(:organization, instance_url: 'url') }
+
+      before do
+        allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:current_organization).and_return(organization)
+      end
+
+      it { expect(subject).to redirect_to('url') }
+    end
+
     context 'otherwise' do
-      it {expect(subject).to redirect_to('somewhere')}
+      it {expect(subject).to redirect_to('https://core.futuresimple.com/users/login')}
     end
   end
 end

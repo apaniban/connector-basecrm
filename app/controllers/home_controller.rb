@@ -45,7 +45,11 @@ class HomeController < ApplicationController
   end
 
   def redirect_to_external
-    redirect_to 'https://path/to/external/app'
+    if current_organization && current_organization.instance_url
+      redirect_to current_organization.instance_url
+    else
+      redirect_to 'https://core.futuresimple.com/users/login'
+    end
   end
 
 end
