@@ -38,13 +38,18 @@ class OauthController < ApplicationController
     organization = Maestrano::Connector::Rails::Organization.find_by_id(params[:organization_id])
 
     if organization && is_admin?(current_user, organization)
+      empty_organization_fields(organization)
+    end
+
+    redirect_to root_url
+  end
+
+  private
+    def empty_organization_fields(organization)
       organization.oauth_uid = nil
       organization.oauth_token = nil
       organization.refresh_token = nil
       organization.sync_enabled = false
       organization.save
     end
-
-    redirect_to root_url
-  end
 end

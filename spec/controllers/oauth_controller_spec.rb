@@ -85,4 +85,43 @@ describe OauthController, type: :controller do
     end
   end
 
+  describe 'destroy_omniauth' do
+    let(:organization) { create(:organization, oauth_uid: 'uid-123') }
+    subject { get :destroy_omniauth, organization_id: id }
+
+    context 'when no organization is found' do
+      let(:id) { 'random-id' }
+
+      it { expect {subject}.to_not change{ organization.oauth_uid } }
+    end
+
+    context 'when org is found' do
+      let(:id) { organization.id }
+      let(:user) { Maestrano::Connector::Rails::User.new(email: 'testing@mail.com', tenant: 'default') }
+
+      before {
+        allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:current_user).and_return(user)
+      }
+
+      context 'when not admin' do
+        before {
+          allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:is_admin?).and_return(false)
+        }
+
+        it { expect{subject}.to_not change { organization.oauth_uid }}
+      end
+
+      context 'when admn' do
+        before {
+          allow_any_instance_of(Maestrano::Connector::Rails::SessionHelper).to receive(:is_admin?).and_return(true)
+        }
+
+        it "deletes org's oauth_uid" do
+          subject
+          organization.reload
+          expect(organization.oauth_uid).to be_nil
+        end
+      end
+    end
+  end
 end
