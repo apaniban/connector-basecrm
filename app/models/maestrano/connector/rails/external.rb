@@ -6,7 +6,7 @@ class Maestrano::Connector::Rails::External
   end
 
   def self.get_client(organization)
-    BaseCRM::Client.new access_token: organization.oauth_token
+    BasecrmClient.new access_token: organization.oauth_token
   end
 
   # Return an array of all the entities that the connector can synchronize
@@ -14,15 +14,10 @@ class Maestrano::Connector::Rails::External
   # a migration to add them to existing organizations
   def self.entities_list
     %w(organization person product)
-    # TODO
-    # The names in this list should match the names of your entities class
-    # e.g %w(person, tasks_list)
-    #  will synchronized Entities::Person and Entities::TasksList
-    []
   end
 
   def self.fetch_company(organization)
     client = self.get_client(organization)
-    client.accounts.self
+    client.get_own_account
   end
 end
