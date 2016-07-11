@@ -290,6 +290,7 @@ DEPENDENCIES
   factory_girl_rails
   figaro
   haml-rails
+  httparty
   jquery-rails
   maestrano-connector-rails
   omniauth-base (~> 0.0.1)
