@@ -22,16 +22,16 @@ class Maestrano::Connector::Rails::Entity < Maestrano::Connector::Rails::EntityB
   end
 
   def create_external_entity(mapped_connec_entity, external_entity_name)
-    Maestrano::Connector::Rails::ConnectorLogger.log('info', @organization, "Sending create #{external_entity_name}: #{mapped_connec_entity} to #{Maestrano::Connector::Rails::External.external_name}")
-    # TODO
     # This method creates the entity in the external app and returns the external id
+
+    Maestrano::Connector::Rails::ConnectorLogger.log('info', @organization, "Sending create #{external_entity_name}: #{mapped_connec_entity} to #{Maestrano::Connector::Rails::External.external_name}")
     @external_client.create(external_entity_name, mapped_connec_entity)
   end
 
   def update_external_entity(mapped_connec_entity, external_id, external_entity_name)
-    Maestrano::Connector::Rails::ConnectorLogger.log('info', @organization, "Sending update #{external_entity_name} (id=#{external_id}): #{mapped_connec_entity} to #{Maestrano::Connector::Rails::External.external_name}")
-    # TODO
     # This method updates the entity with the given id in the external app
+
+    Maestrano::Connector::Rails::ConnectorLogger.log('info', @organization, "Sending update #{external_entity_name} (id=#{external_id}): #{mapped_connec_entity} to #{Maestrano::Connector::Rails::External.external_name}")
     mapped_connec_entity.merge!('id' => external_id)
     @external_client.update(external_entity_name, mapped_connec_entity)
   end
@@ -41,9 +41,6 @@ class Maestrano::Connector::Rails::Entity < Maestrano::Connector::Rails::EntityB
   end
 
   def self.last_update_date_from_external_entity_hash(entity)
-    # TODO
-    # This method return the last update date from an external_entity_hash
-    # e.g entity['last_update']
     entity['updated_at']
   end
 
