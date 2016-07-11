@@ -1,5 +1,5 @@
 / TODO
-/ Replace ApplicationName
+/ Replace BaseCRM
 .home
   .banners
     .container
@@ -7,15 +7,15 @@
         .row
           .col-md-10
             %h3 Data Shared
-            %small Equivalence between the internal id and ApplicationName id for each of your entities
+            %small Equivalence between the internal id and BaseCRM id for each of your entities
 
         - if @idmaps
           %table.table.table-condensed
             %th Entity name
             %th Internal entity
             %th Internal id
-            %th ApplicationName entity
-            %th ApplicationName id
+            %th BaseCRM entity
+            %th BaseCRM id
             %th Message
 
             - @idmaps.each do |idmap|
